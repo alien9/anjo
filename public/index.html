@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+<script type="text/javascript">
+  var map;
+  var markers={};
+  function initialize() {
+    var latlng = new google.maps.LatLng(-23.5, -46.5);
+    var myOptions = {
+      zoom: 8,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    $.ajax({
+      url:'/tracks/23.json',dataType:'json',
+      success:function(d){
+        if(d.points){
+          var a=[];
+          for(var i=0;i<d.points.length;i++) a.push(new google.maps.LatLng(d.points[i][1],d.points[i][0]));
+          var p=new google.maps.Polyline({path:a,map:map});
+          google.maps.event.addListener(p,'click', function(e){alert('clicked!')});
+        }
+      }
+    });
+  }
+  function geocode(a,what){
+    $.ajax({
+      url:'/geocode',data:{a:$('#'+a+'_geocode').val()}, type:'post', dataType:'json',
+      success:function(d){
+        if(d.body){
+          var p=jQuery.parseJSON(d.body);
+          if(p.results && p.results.length){
+            v=p.results.shift();
+            if(v.geometry && v.geometry.location){
+              $('#'+a+'_lat').val(v.geometry.location.lat);
+              $('#'+a+'_lng').val(v.geometry.location.lng);
+              var p=new google.maps.LatLng(v.geometry.location.lat,v.geometry.location.lng);
+              if(!markers[a]){
+                markers[a]=new google.maps.Marker({
+                  map:map,draggable:true,
+                  position:p
+                });
+                google.maps.event.addListener(markers[a],'dragend', function(e){
+                  var u=this.getPosition();
+                  $('#'+a+'_lat').val(u.lat());
+                  $('#'+a+'_lng').val(u.lng());
+                });
+              }else{
+                markers[a].setPosition(p);
+              }
+              return false;
+            }
+          }
+        }
+        alert('Lugar desconhecido!');
+      }
+    });
+    return false;
+  }
+</script>
+</head>
+<body onload="initialize()">
+  <div id="map_canvas" style="width:100%; height:100%"></div>
+  <div id="panel" style="position:absolute;height:100px;background:white;border:1px solid #666;top:0;">
+   <div id="panel" style="background:yellow;border:1px solid #666;">
+   <table>
+   <tr>
+  <form onsubmit="return geocode('origem'); ">
+    <tr>
+      <td>Origem</td>
+      <td><input type="text" name="origem" id="origem_geocode" value="rua agostinho asquini,46, sao paulo, br" size="40"/></td>
+      <td><input type="text" name="latitude" id="origem_lat" size="10"/></td>
+      <td><input type="text" name="longitude" id="origem_lng" size="10"/></td>
+
+      <td><input type="submit" value=" -> " /></td>
+    </tr>
+  </form>
+  <form onsubmit="return geocode('destino');">
+    <tr>
+      <td>Destino</td>
+      <td><input type="text" name="destino" id="destino_geocode" size="40"/></td>
+      <td><input type="text" name="latitude" id="destino_lat" size="10"/></td>
+      <td><input type="text" name="longitude" id="destino_lng" size="10"/></td>
+
+      <td><input type="submit" value=" -> " /></td>
+    </tr>
+  </form>
+  </div></div>
+</body>
+</html>
+

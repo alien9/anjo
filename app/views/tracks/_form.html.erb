@@ -1,0 +1,21 @@
+<%= form_for(@track, :html => {:multipart => true}) do |f| %>
+  <% if @track.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@track.errors.count, "error") %> prohibited this track from being saved:</h2>
+
+      <ul>
+      <% @track.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+  <p><label>Nome</label><%= f.text_field 'nome' %></p>
+  <p><label for="upload_file">Select File</label> :
+      <%= file_field 'upload', 'datafile' %></p>
+    <%= f.submit %>
+  </div>
+<% end %>
+
