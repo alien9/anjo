@@ -1,8 +1,13 @@
 <html>
-<head>
+<head><meta charset="utf-8"/>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
 <script type="text/javascript" src="/javascripts/jquery.min.js"></script>
+<style type="text/css">
+.maska{display:block !important;}
+#maska{display:none;}
+#panel{position:absolute;background:white;border:1px solid #666;}
+</style>
 <script type="text/javascript">
   var map;
   var markers={};
@@ -25,6 +30,27 @@
         }
       }
     });
+    var w={};
+    $('#headerzinho').mousedown(function(b){
+      b.preventDefault ? b.preventDefault() : b.returnValue = false;
+      w.x=b.offsetX;
+      w.y=b.offsetY;
+      $('#maska').addClass('maska');
+    });
+    var fu=function(b){
+      w={};
+      $('#maska').removeClass('maska')
+    };
+    $('#maska').mouseup(fu);
+    $('#panel').mouseup(fu);
+    var fi=function(b){
+      if(w.x){
+        $('#panel').attr('style', "top:"+(b.clientY-w.y)+"px; left:"+(b.clientX-w.x)+"px");
+      }
+    };
+    $('#maska').mousemove(fi);
+    $('#panel').mousemove(fi);
+
   }
   function geocode(a,what){
     $.ajax({
@@ -60,12 +86,15 @@
     });
     return false;
   }
+
 </script>
 </head>
 <body onload="initialize()">
-  <div id="map_canvas" style="width:100%; height:100%"></div>
-  <div id="panel" style="position:absolute;height:100px;background:white;border:1px solid #666;top:0;">
-   <div id="panel" style="background:yellow;border:1px solid #666;">
+  <div id="map_canvas" style="width:100%; height:100%"></div><div id="maska" style="width:100%; height:100%;background:red;position:absolute;top:0;left:0;opacity:0.05"> </div>
+  <div id="panel" style="top:100px;left:100px;">
+
+   <div id="panel_sub" style="background:yellow;border:1px solid #666;">
+     <a href="javascript:void(0);" id="headerzinho" style="display:block;color:white;background:black">Localização</a>
    <table>
    <tr>
   <form onsubmit="return geocode('origem'); ">
