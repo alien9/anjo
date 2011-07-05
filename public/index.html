@@ -11,8 +11,11 @@
 <script type="text/javascript">
   var map;
   var markers={};
+  var geocoder;
+
   function initialize() {
     var latlng = new google.maps.LatLng(-23.5, -46.5);
+    geocoder = new google.maps.Geocoder();
     var myOptions = {
       zoom: 8,
       center: latlng,
@@ -73,13 +76,28 @@
                   var u=this.getPosition();
                   $('#'+a+'_lat').val(u.lat());
                   $('#'+a+'_lng').val(u.lng());
+                  codeLatLng(u,$('#'+a+'_geocode'));
                 });
               }else{
                 markers[a].setPosition(p);
               }
-              return false;
+
             }
           }
+          var x=[],y=[],n=0;
+          for(var i in markers){
+            if(markers[i]){
+              n++;
+              x.push(markers[i].getPosition().lng());
+              y.push(markers[i].getPosition().lat());
+            }
+          }
+          if(n==2) {
+            var sw=new google.maps.LatLng((y[0]>y[1])?y[1]:y[0],(x[0]>x[1])?x[1]:x[0]);
+            var ne=new google.maps.LatLng((y[0]>y[1])?y[0]:y[1],(x[0]>x[1])?x[0]:x[1]);
+            map.fitBounds(new google.maps.LatLngBounds(sw,ne));
+          }
+          return false;
         }
         alert('Lugar desconhecido!');
       }
@@ -87,6 +105,20 @@
     return false;
   }
 
+
+  function codeLatLng(latlng,e) {
+    if (geocoder) {
+      geocoder.geocode({'latLng': latlng}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          if (results[1]) {
+            e.val(results[1].formatted_address);
+          }
+        } else {
+          alert("Geocoder failed due to: " + status);
+        }
+      });
+    }
+  }
 </script>
 </head>
 <body onload="initialize()">
