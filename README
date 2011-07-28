@@ -1,5 +1,9 @@
 Bike Anjo
 
-Este projeto pretende integrar ciclistas para localizar rotas convenientes.
+Este projeto pretende integrar ciclistas para localizar rotas convenientes para transporte nas cidades.
 
-Um usuário poderá geocodificar sua origem e destino e localizar um ciclista mais experiente que faça uma rota compatível.
+Um usuário experiente pode inserir a sua rota diária no formato GPX (padrão para rastreadores e telefones).
+Esta rota é convertida para registro em uma base PostGIS (MULTIPOINTM), contendo a localização, bem como o timestamp (hora local) de cada ponto registrado.
+Outro usuário, este um novato, poderá geocodificar sua origem e destino e localizar um ciclista mais experiente que faça uma rota compatível.
+Por intermédio de uma query espacial, que inclui a coordenada de tempo fornecida para o destino,o novato pode encontrar possíveis rotas para acompanhar ciclistas mais experientes.
+Clicando na rota mostrada no mapa surgem as informações de contato do ciclista, bem como as resenhas registradas por eventuais outros visitantes.
