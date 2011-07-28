@@ -1,3 +1,5 @@
 Bike Anjo
 
-Este projeto pretende integrar ciclistas para localizar rotas próximas.
+Este projeto pretende integrar ciclistas para localizar rotas convenientes.
+
+Um usuário poderá geocodificar sua origem e destino e localizar um ciclista mais experiente que faça uma rota compatível.
